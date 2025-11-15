@@ -20,12 +20,18 @@ def _most_frequent(series: pd.Series) -> str:
     return series.iloc[-1]
 
 
-def build_training_dataset(engine) -> Tuple[pd.DataFrame, List[str]]:
+def build_training_dataset(engine, load_from_database: bool=False) -> Tuple[pd.DataFrame, List[str]]:
     """Assemble the supervised dataset (ratings enriched with metadata)."""
-    avaliacao = read_table(engine, "dw_alv.avaliacao")
-    filmes = read_table(engine, "dw_alv.filme")
-    receita = read_table(engine, "dw_alv.receita")
-    endereco = read_table(engine, "dw_alv.endereco")
+    if load_from_database:
+        avaliacao = read_table(engine, "dw_alv.avaliacao")
+        filmes = read_table(engine, "dw_alv.filme")
+        receita = read_table(engine, "dw_alv.receita")
+        endereco = read_table(engine, "dw_alv.endereco")
+    else:
+        avaliacao = pd.read_csv('data/CSVs/avaliacao.csv')
+        endereco = pd.read_csv('data/CSVs/endereco.csv')
+        filmes = pd.read_csv('data/CSVs/filme.csv')
+        receita = pd.read_csv('data/CSVs/receita.csv')
 
     filmes_subset = filmes[
         ["filmesk", "filmenome", "anodelancamento", "duracaomin", "generonome"]
