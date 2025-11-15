@@ -95,37 +95,64 @@ Apenas execute o script:
 
 ### Extrair dados do Data Warehouse
 
-Não sei
+Basta executar o script:
+
+```bash
+python3 run_output.py
+```
 
 ## Conectando com o banco de dados via Python
 
 Não apenas para conectar via python, mas para conseguir conectar at all é preciso abrir permitir acesso à porta 5432 no servidor do banco de dados.
 
-sudo systemctl status postgresql
-
-sudo systemctl start postgresql
-
-sudo ss -tlpn | grep 5432
-Problem: If you see 127.0.0.1:5432, it's only listening for local connections.
-
-Correct: You should see 0.0.0.0:5432 (listening on all IPv4 interfaces) or 10.61.49.193:5432 (listening specifically on that interface).
-
-/etc/postgresql/<version>/main/postgresql.conf
-
-* From this:
-#listen_addresses = 'localhost'
-
-* To this:
-listen_addresses = '*'
-
-sudo systemctl restart postgresql
-
-pg_hba.conf
+Execute os comandos abaixo no servidor do banco de dados:
 
 ```bash
+sudo systemctl status postgresql
+sudo systemctl start postgresql
+sudo ss -tlpn | grep 5432
+```
+
+Se aparecer apenas `127.0.0.1:5432` (aberto apenas para conexões internas), siga os passos abaixo para permitir conexões remotas.
+
+O objetivo é fazer com que apareça `0.0.0.0:5432` ou `<your-ip>:5432`.
+
+Acesse o arquivo de configuração do PostgreSQL (altere o 14 para a sua versão):
+
+```bash
+sudo nano /etc/postgresql/14/main/postgresql.conf
+```
+
+Altere:
+
+```bash
+# Anterior:
+listen_addresses = 'localhost'
+#listen_addresses = '*'
+
+# Para:
+listen_addresses = '*'
+```
+
+Reinicie o serviço do PostgreSQL:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+Agora edite o arquivo de configuração de autenticação:
+
+```bash
+sudo nano /etc/postgresql/14/main/pg_hba.conf
+```
+
 ```bash
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 host    all             all             10.61.49.0/24           md5
 ```
 
+Reinicie o serviço do PostgreSQL novamente:
+
+```bash
 sudo systemctl reload postgresql
+```
