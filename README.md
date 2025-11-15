@@ -54,7 +54,7 @@ Agora basta executar a carga inicial do ETL:
 
 Primeiro abra o AWS learner Lab e execute o notebook [external-data-imdb](aws/external-data-imdb.ipynb). Baixe o arquivo `aws/imdb_movies.parquet`.
 
-### Modelo preditivo (Bônus)
+### Modelo preditivo (sistema de recomendação)
 
 O fluxo em `src/recommender/` executa:
 
@@ -156,5 +156,6 @@ Reinicie o serviço do PostgreSQL novamente:
 ```bash
 sudo systemctl reload postgresql
 ```
+
 
 
