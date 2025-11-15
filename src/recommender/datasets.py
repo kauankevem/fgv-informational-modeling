@@ -10,6 +10,8 @@ import pandas as pd
 from .constants import FEATURE_COLUMNS
 from .database import normalize_columns, read_table
 
+LOCAL_CSV_DIR = Path(__file__).resolve().parents[2] / "data" / "CSVs"
+
 
 def _most_frequent(series: pd.Series) -> str:
     """Return the most common entry, handling ties deterministically."""
@@ -20,7 +22,9 @@ def _most_frequent(series: pd.Series) -> str:
     return series.iloc[-1]
 
 
-def build_training_dataset(engine, load_from_database: bool=False) -> Tuple[pd.DataFrame, List[str]]:
+def build_training_dataset(
+    engine, load_from_database: bool = False
+) -> Tuple[pd.DataFrame, List[str]]:
     """Assemble the supervised dataset (ratings enriched with metadata)."""
     if load_from_database:
         avaliacao = read_table(engine, "dw_alv.avaliacao")
@@ -28,10 +32,10 @@ def build_training_dataset(engine, load_from_database: bool=False) -> Tuple[pd.D
         receita = read_table(engine, "dw_alv.receita")
         endereco = read_table(engine, "dw_alv.endereco")
     else:
-        avaliacao = pd.read_csv('data/CSVs/avaliacao.csv')
-        endereco = pd.read_csv('data/CSVs/endereco.csv')
-        filmes = pd.read_csv('data/CSVs/filme.csv')
-        receita = pd.read_csv('data/CSVs/receita.csv')
+        avaliacao = pd.read_csv(LOCAL_CSV_DIR / "avaliacao.csv")
+        endereco = pd.read_csv(LOCAL_CSV_DIR / "endereco.csv")
+        filmes = pd.read_csv(LOCAL_CSV_DIR / "filme.csv")
+        receita = pd.read_csv(LOCAL_CSV_DIR / "receita.csv")
 
     filmes_subset = filmes[
         ["filmesk", "filmenome", "anodelancamento", "duracaomin", "generonome"]
@@ -99,4 +103,3 @@ def prepare_candidate_movies(path: Path, limit: int) -> pd.DataFrame:
     df = df[(df["imdbnumvotos"] >= 1000) & (df["imdbavaliacao"] >= 6.0)]
     df = df.sort_values(["imdbavaliacao", "imdbnumvotos"], ascending=[False, False])
     return df.head(limit)
-
