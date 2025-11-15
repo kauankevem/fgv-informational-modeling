@@ -56,21 +56,34 @@ Primeiro abra o AWS learner Lab e execute o notebook [external-data-imdb](aws/ex
 
 ### Modelo preditivo (Bônus)
 
-O antigo `mock_model.py` foi substituído por um pipeline modular em `src/recommender/`. O fluxo realiza:
+O antigo `mock_model.py` foi substituído por um pipeline modular em `src/recommender/`. O fluxo executa:
 
-1. Leitura dos dados do DW (`dw_alv`) e montagem do dataset supervisionado.
-2. Treinamento de um `RandomForestRegressor` com pré-processamento (escalas + one-hot).
-3. Inferência para os títulos do arquivo `aws/imdb_movies.parquet`, ranqueando os Top‑N por estado.
-4. Persistência no schema `imdb_alv` e exportação para `aws/imdb_model_infer.parquet`.
+1. Leitura dos dados históricos (por padrão, os CSVs em `data/CSVs`; configure `load_from_database=True` na chamada de `build_training_dataset` se quiser consumir direto do DW).
+2. Treinamento de um `RandomForestRegressor` com pré-processamento (standard scaler + one-hot).
+3. Inferência nos títulos do arquivo `aws/imdb_movies.parquet`, ranqueando os Top-N por estado.
+4. Persistência no schema `imdb_alv.model_infer` e exportação do resultado para `aws/imdb_model_infer.parquet`.
 
-Para executar:
+**Pré-requisitos**
+
+- Python 3.9+ e pacotes: `pandas`, `numpy`, `scikit-learn`, `sqlalchemy`, `python-dotenv`, `pyarrow` e `psycopg2-binary`. Instale com:
+  ```bash
+  pip3 install pandas numpy scikit-learn sqlalchemy python-dotenv pyarrow psycopg2-binary
+  ```
+- Arquivo `.env` na raiz contendo:
+  ```
+  IP=<ip ou hostname do PostgreSQL>
+  PASSWORD=<senha do usuário postgres>
+  ```
+  (essas variáveis são consumidas em `src/recommender/config.py`).
+- Arquivo `aws/imdb_movies.parquet`, gerado pelo notebook `aws/external-data-imdb.ipynb`.
+
+**Execução**
 
 ```bash
-# garanta que as variáveis IP e PASSWORD apontam para o PostgreSQL
 python3 run_recommender.py
 ```
 
-O script escreve em `imdb_alv.model_infer` (sobrepondo o conteúdo anterior) e salva a última previsão em `aws/imdb_model_infer.parquet`. Caso precise adaptar parâmetros (limite de candidatos, número de recomendações por estado etc.), consulte `src/recommender/constants.py`.
+O script escreve em `imdb_alv.model_infer` (sobrescrevendo o conteúdo anterior) e salva a última previsão em `aws/imdb_model_infer.parquet`. Caso precise adaptar parâmetros (limite de candidatos, número de recomendações por estado etc.), ajuste `src/recommender/constants.py`.
 
 ### ETL incremental
 

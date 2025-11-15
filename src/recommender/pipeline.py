@@ -39,7 +39,6 @@ def run_pipeline() -> pd.DataFrame:
 
     LOGGER.info("Gerando previsões personalizadas por estado...")
     predictions = generate_predictions(model, candidate_movies, states)
-
     LOGGER.info("Persistindo previsões no schema %s.%s", DEFAULT_SCHEMA, DEFAULT_TABLE_NAME)
     write_table(
         engine,
@@ -52,6 +51,5 @@ def run_pipeline() -> pd.DataFrame:
     output_path = output_predictions_path()
     LOGGER.info("Salvando arquivo parquet em %s", output_path)
     predictions.to_parquet(output_path, index=False)
-
     return predictions
 
