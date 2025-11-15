@@ -85,12 +85,12 @@ python3 run_recommender.py
 
 O script escreve em `imdb_alv.model_infer` (sobrescrevendo o conteúdo anterior) e salva a última previsão em `aws/imdb_model_infer.parquet`. Caso precise adaptar parâmetros (limite de candidatos, número de recomendações por estado etc.), ajuste `src/recommender/constants.py`.
 
-### ETL incremental
+### ETL
 
 Apenas execute o script:
 
 ```bash
-\i ETL_incremental_load_ALV.sql;
+\i ETL_new_fact_ALV.sql;
 ```
 
 ### Extrair dados do Data Warehouse
@@ -156,3 +156,4 @@ Reinicie o serviço do PostgreSQL novamente:
 ```bash
 sudo systemctl reload postgresql
 ```
+
