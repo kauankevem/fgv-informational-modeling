@@ -56,9 +56,21 @@ Primeiro abra o AWS learner Lab e execute o notebook [external-data-imdb](aws/ex
 
 ### Modelo preditivo (Bônus)
 
-Atualmente é o script `mock_model.py`.
+O antigo `mock_model.py` foi substituído por um pipeline modular em `src/recommender/`. O fluxo realiza:
 
-Ps: Para rodá-lo é precisso configurar para o python se comunicar com o banco de dados. Veja a seção abaixo.
+1. Leitura dos dados do DW (`dw_alv`) e montagem do dataset supervisionado.
+2. Treinamento de um `RandomForestRegressor` com pré-processamento (escalas + one-hot).
+3. Inferência para os títulos do arquivo `aws/imdb_movies.parquet`, ranqueando os Top‑N por estado.
+4. Persistência no schema `imdb_alv` e exportação para `aws/imdb_model_infer.parquet`.
+
+Para executar:
+
+```bash
+# garanta que as variáveis IP e PASSWORD apontam para o PostgreSQL
+python3 run_recommender.py
+```
+
+O script escreve em `imdb_alv.model_infer` (sobrepondo o conteúdo anterior) e salva a última previsão em `aws/imdb_model_infer.parquet`. Caso precise adaptar parâmetros (limite de candidatos, número de recomendações por estado etc.), consulte `src/recommender/constants.py`.
 
 ### ETL incremental
 
