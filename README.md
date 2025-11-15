@@ -56,7 +56,7 @@ Primeiro abra o AWS learner Lab e execute o notebook [external-data-imdb](aws/ex
 
 ### Modelo preditivo (Bônus)
 
-O antigo `mock_model.py` foi substituído por um pipeline modular em `src/recommender/`. O fluxo executa:
+O fluxo em `src/recommender/` executa:
 
 1. Leitura dos dados históricos (por padrão, os CSVs em `data/CSVs`; configure `load_from_database=True` na chamada de `build_training_dataset` se quiser consumir direto do DW).
 2. Treinamento de um `RandomForestRegressor` com pré-processamento (standard scaler + one-hot).
@@ -156,4 +156,5 @@ Reinicie o serviço do PostgreSQL novamente:
 ```bash
 sudo systemctl reload postgresql
 ```
+
 
