@@ -16,6 +16,7 @@ CREATE TABLE Filme
   FilmeNome varchar(128) NOT NULL,
   AnoDeLancamento INT NOT NULL,
   GeneroNome VARCHAR(128) NOT NULL,
+  EmCatalogo BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (FilmeSK)
 );
 
@@ -72,6 +73,20 @@ CREATE TABLE Receita
   EnderecoSK INT NOT NULL,
   PRIMARY KEY (ReceitaSK),
   FOREIGN KEY (UsuarioSK) REFERENCES Usuario(UsuarioSK),
+  FOREIGN KEY (CalendarioSK) REFERENCES Calendario(CalendarioSK),
+  FOREIGN KEY (EnderecoSK) REFERENCES Endereco(EnderecoSK)
+);
+
+CREATE TABLE ModelPrediction
+(
+  FilmeSK INT NOT NULL,
+  CalendarioSK INT NOT NULL,
+  EnderecoSK INT NOT NULL,
+  IMDbAvaliacao FLOAT NOT NULL,
+  IMDbNumVotos FLOAT NOT NULL,
+  PredicaoModelo FLOAT NOT NULL,
+  PRIMARY KEY (FilmeSK, CalendarioSK, EnderecoSK),
+  FOREIGN KEY (FilmeSK) REFERENCES Filme(FilmeSK),
   FOREIGN KEY (CalendarioSK) REFERENCES Calendario(CalendarioSK),
   FOREIGN KEY (EnderecoSK) REFERENCES Endereco(EnderecoSK)
 );

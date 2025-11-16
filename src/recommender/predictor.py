@@ -23,6 +23,7 @@ def generate_predictions(
 
     all_predictions = []
     feature_ready = base_movies.copy()
+    inference_date = pd.Timestamp.today().normalize()
 
     for state in states:
         state_frame = feature_ready.copy()
@@ -35,10 +36,12 @@ def generate_predictions(
     combined = pd.concat(all_predictions, ignore_index=True)
     combined = combined.sort_values(["estado", "predicaomodelo"], ascending=[True, False])
     combined = combined.groupby("estado").head(top_k_per_state).reset_index(drop=True)
+    combined["datareferencia"] = inference_date
 
     # Add surrogate key and convert column names back to the DW-friendly format.
     combined.insert(0, "FilmeIMDbSK", combined.index + 1)
     rename_for_output = {
+        "filmeimdbskraw": "FilmeIMDbId",
         "filmenome": "FilmeNome",
         "anodelancamento": "AnoDeLancamento",
         "duracaomin": "DuracaoMin",
@@ -47,11 +50,13 @@ def generate_predictions(
         "imdbnumvotos": "IMDbNumVotos",
         "estado": "Estado",
         "predicaomodelo": "PredicaoModelo",
+        "datareferencia": "DataReferencia",
     }
     combined = combined.rename(columns=rename_for_output)
 
     final_columns = [
         "FilmeIMDbSK",
+        "FilmeIMDbId",
         "FilmeNome",
         "AnoDeLancamento",
         "DuracaoMin",
@@ -60,6 +65,6 @@ def generate_predictions(
         "IMDbNumVotos",
         "Estado",
         "PredicaoModelo",
+        "DataReferencia",
     ]
     return combined[final_columns]
-
