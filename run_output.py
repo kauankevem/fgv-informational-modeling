@@ -1,4 +1,5 @@
 import pandas as pd
+from tqdm import tqdm
 
 from src.recommender.config import load_database_config
 from src.recommender.database import read_table, build_engine
@@ -20,7 +21,7 @@ def save_all_to_excel():
     ]
 
     with pd.ExcelWriter('output.xlsx') as writer:
-        for table in tables:
+        for table in tqdm(tables, desc="Saving tables to Excel"):
             df = read_table(engine, f"dw_alv.{table}")
             df.to_excel(writer, sheet_name=table, index=False) 
 
