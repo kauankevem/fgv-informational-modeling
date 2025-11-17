@@ -78,6 +78,23 @@ DROP COLUMN IF EXISTS logradouro,
 DROP COLUMN IF EXISTS municipio;
 
 
+-- Verifica ou adiciona uma linha com a data de agora na tabela Calendario
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM dw_alv.calendario WHERE DataCompleta = CURRENT_DATE) THEN
+        INSERT INTO dw_alv.calendario (CalendarioSK, DataCompleta, DiaSemana, Dia, Mes, Trimestre, Ano)
+        VALUES (
+            (SELECT COALESCE(MAX(CalendarioSK), 0) + 1 FROM dw_alv.calendario),
+            CURRENT_DATE,
+            TO_CHAR(CURRENT_DATE, 'Day'),
+            EXTRACT(DAY FROM CURRENT_DATE)::INT,
+            EXTRACT(MONTH FROM CURRENT_DATE)::INT,
+            EXTRACT(QUARTER FROM CURRENT_DATE)::INT,
+            EXTRACT(YEAR FROM CURRENT_DATE)::INT
+        );
+    END IF;
+END $$;
+
 -- Adiciona a nova tabela de fato --
 DROP TABLE IF EXISTS dw_alv.ModelPrediction;
 CREATE TABLE dw_alv.ModelPrediction
@@ -91,10 +108,11 @@ CREATE TABLE dw_alv.ModelPrediction
     IMDbNumVotos FLOAT NOT NULL,
     PredicaoModelo FLOAT NOT NULL,
     EnderecoSK INT NOT NULL,
+    CalendarioSK INT NOT NULL,
     PRIMARY KEY (FilmeIMDbSK)
 );
 
-INSERT INTO dw_alv.ModelPrediction (FilmeIMDbSK, FilmeNome, AnoDeLancamento, DuracaoMin, GeneroNome, IMDbAvaliacao, IMDbNumVotos, PredicaoModelo, EnderecoSK)
+INSERT INTO dw_alv.ModelPrediction (FilmeIMDbSK, FilmeNome, AnoDeLancamento, DuracaoMin, GeneroNome, IMDbAvaliacao, IMDbNumVotos, PredicaoModelo, EnderecoSK, CalendarioSK)
 SELECT
     mi."FilmeIMDbSK",
     mi."FilmeNome",
@@ -104,7 +122,10 @@ SELECT
     mi."IMDbAvaliacao",
     mi."IMDbNumVotos",
     mi."PredicaoModelo",
-    e.EnderecoSK
+    e.EnderecoSK,
+    c.CalendarioSK
 FROM imdb_alv.model_infer mi
 LEFT JOIN dw_alv.Endereco e
-    ON mi."Estado" = e.Estado;
+    ON mi."Estado" = e.Estado
+LEFT JOIN dw_alv.Calendario c
+    ON c.DataCompleta = CURRENT_DATE;
