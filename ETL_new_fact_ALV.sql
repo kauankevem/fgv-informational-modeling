@@ -57,6 +57,11 @@ FROM dw_alv.usuario u
 WHERE a.UsuarioSK = u.usuariosk;
 
 
+-- Deleta a coluna auxiliar ederecosk da tabela Usuario
+ALTER TABLE dw_alv.usuario
+DROP COLUMN enderecosk;
+
+
 -- Atualiza a tabela Endereco para conter apenas um registro por Estado
 DELETE FROM dw_alv.endereco a
 USING (
