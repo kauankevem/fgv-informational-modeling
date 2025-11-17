@@ -73,9 +73,9 @@ WHERE a.EnderecoSK <> b.keep_id
   AND a.Estado = b.Estado;
 
 ALTER TABLE dw_alv.endereco
-DROP COLUMN bairro,
-DROP COLUMN logradouro,
-DROP COLUMN municipio;
+DROP COLUMN IF EXISTS bairro,
+DROP COLUMN IF EXISTS logradouro,
+DROP COLUMN IF EXISTS municipio;
 
 
 -- Adiciona a nova tabela de fato --
