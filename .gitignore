@@ -1,3 +1,5 @@
 # Ignore sensitive/local environment configuration
 .env
 
+# python
+__pycache__/

@@ -6,3 +6,4 @@ python-dotenv
 pyarrow
 psycopg2-binary
 openpyxl
+tqdm
